@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: countdown-datacenter
+spec:
+  template:
+    metadata:
+      name: countdown-datacenter # Explicitly setting the pod template name
+    spec:
+      containers:
+      - name: container-countdown-datacenter
+        image: ubuntu:latest
+        command: [ "sleep", "5" ]
+      restartPolicy: Never
