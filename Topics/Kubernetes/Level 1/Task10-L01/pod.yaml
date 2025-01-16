@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: xfusion
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: time-config
+  namespace: xfusion
+data:
+  TIME_FREQ: "10"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: time-check
+  namespace: xfusion
+spec:
+  containers:
+  - name: time-check
+    image: busybox:latest
+    env:
+    - name: TIME_FREQ
+      valueFrom:
+        configMapKeyRef:
+          name: time-config
+          key: TIME_FREQ
+    args:
+    - /bin/sh
+    - -c
+    - |
+      while true; do
+        date >> /opt/devops/time/time-check.log;
+        # Sleep for the duration specified by the TIME_FREQ environment variable
+        sleep $TIME_FREQ;
+      done
+    volumeMounts:
+    - mountPath: /opt/devops/time
+      name: log-volume
+  volumes:
+  - name: log-volume
+    emptyDir: {}
